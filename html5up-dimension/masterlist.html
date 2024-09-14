@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Kayryeji</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<header id="header">
+							<div class="logo">
+								<span class="icon fa-gem"></span>
+							</div>
+							<div class="content">
+								<div class="inner">
+									<h1><a href="index.html">Home</a></h1>
+								</div>
+							</div>
+						<nav>
+							<ul id="goNavList">
+								<!-- Navigation items will be dynamically generated here -->
+							</ul>
+							<!--
+							<ul>
+								<li><a href="#intro">Intro</a></li>
+								<li><a href="#work">Work</a></li>
+								<li><a href="#about">About</a></li>
+								<li><a href="#contact">Contact</a></li>
+								<li><a href="#elements">Elements</a></li>
+							</ul>
+							-->
+						</nav>
+					</header>
+
+				
+			</div>
+
+		<!-- BG -->
+			<div id="bg"></div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script>
+				// Replace this with your Google Apps Script deployment URL
+				const scriptUrl = 'https://script.google.com/macros/s/AKfycbzy0_c5YFcb227XsRAQb8P-wpFnvRvmHfJGuv-XN6v1mu4oCw1t1yj-jIvjR1qiGxEg/exec';
+		
+				// Function to fetch and display all unique GO names in the navigation bar
+				// Function to fetch and display all unique GO names in the navigation bar
+					async function fetchAndDisplayGONames() {
+						try {
+							const response = await fetch(`${scriptUrl}?action=getUniqueGO`);
+							const goNames = await response.json();
+							const goNavList = document.getElementById('goNavList');
+
+							goNavList.innerHTML = ''; // Clear existing list
+
+							goNames.forEach(name => {
+								const li = document.createElement('li');
+								const a = document.createElement('a');
+								a.textContent = name;
+
+								// Set the href to navigate to the data page with action and value parameters
+								a.href = `data.html?action=getByGOName&value=${encodeURIComponent(name)}`;
+								
+								li.appendChild(a);
+								goNavList.appendChild(li);
+							});
+						} catch (error) {
+							console.error('Error fetching GO names:', error);
+							document.getElementById('goNavList').innerHTML = 'Error loading GO names.';
+						}
+					}
+
+			
+				
+		
+				// Function to fetch and display data for the selected GO name
+				async function fetchAndDisplayGOData(goName) {
+					try {
+						const response = await fetch(`${scriptUrl}?action=getGOData&goName=${encodeURIComponent(goName)}`);
+						const goData = await response.json();
+						const goDataSection = document.getElementById('goDataSection');
+		
+						if (goData.length === 0) {
+							goDataSection.innerHTML = `<p>No data found for GO: ${goName}</p>`;
+							return;
+						}
+		
+						let table = `
+							<h2>Data for GO: ${goName}</h2>
+							<table>
+								<thead>
+									<tr>
+										<th>GO Name</th>
+										<th>Claim</th>
+										<th>Total Cost</th>
+										<th>Payment Status</th>
+									</tr>
+								</thead>
+								<tbody>
+						`;
+		
+						goData.forEach(row => {
+							table += `
+								<tr>
+									<td>${row[0]}</td>
+									<td>${row[1]}</td>
+									<td>${row[2]}</td>
+									<td>${row[3]}</td>
+								</tr>
+							`;
+						});
+		
+						table += `
+								</tbody>
+							</table>
+						`;
+		
+						goDataSection.innerHTML = table;
+					} catch (error) {
+						console.error('Error fetching GO data:', error);
+						document.getElementById('goDataSection').innerHTML = `Error loading data for GO: ${goName}`;
+					}
+				}
+		
+				// Initialize by fetching all unique GO names on page load
+				fetchAndDisplayGONames();
+			</script>
+
+	</body>
+</html>
